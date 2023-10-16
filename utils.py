@@ -143,7 +143,7 @@ def greedy_cycle(distance_matrix,cost_list,NR_NODES, HALF_NODES, starting_node )
 
         for e in edges:
             for new_node in non_visited:
-
+                
                 cost_diff = -distance_matrix[e[0]][e[1]] \
                     + distance_matrix[e[0]][ new_node] + distance_matrix[new_node][e[1]] \
                     + cost_list[new_node]
