@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-def plotMap(nodes, edges=[], colors = False):
+def plotMap(nodes, edges=[], colors = False, cost = True):
     fig=plt.figure(figsize=(6,6), dpi= 100, facecolor='w', edgecolor='k')
     
     for e in (edges):
@@ -13,14 +13,14 @@ def plotMap(nodes, edges=[], colors = False):
         
     X = [c[0] for c in nodes]
     Y = [c[1] for c in nodes]
-    S = [c[2] for c in nodes]
-    
-    # plt.scatter(X, Y, S, c = S, cmap="RdYlGn", )
-    # plt.scatter(X, Y, c = S, cmap="RdYlGn", )
-    plt.scatter(X, Y, c = S, cmap="grey", )
-
-
-    
+    if cost:
+        print(cost)
+        S = [c[2] for c in nodes]
+        plt.scatter(X, Y, c = S, cmap="grey")
+    else:
+        plt.scatter(X, Y, cmap="grey") 
+        for i in range(len(nodes)):
+            plt.annotate(i, (X[i], Y[i]+0.2))
     plt.show()
 
 
@@ -34,7 +34,7 @@ def get_min_index(array):
 def Euclidian_distance(coor_1, coor_2):
     x1, y1 = coor_1
     x2, y2 = coor_2
-    return int(((x2 -x1)**2 + (y2-y1)**2 )**(1/2))
+    return ((x2 -x1)**2 + (y2-y1)**2 )**(1/2)
 
 
 def Random(cost_list, distance_matrix, lista):
@@ -51,14 +51,15 @@ def Random(cost_list, distance_matrix, lista):
     return edges, total_cost
 
 
-def get_dist_matrix_and_cost(data):
+def get_dist_matrix_and_cost(data, cost = True):
     NR_NODES = len(data)
     distance_matrix = np.zeros((NR_NODES,NR_NODES))
     cost_list = np.zeros(NR_NODES)
     for i in range(NR_NODES):
         for j in range(i,NR_NODES):
             dist = Euclidian_distance(data[i][:2],data[j][:2])
-            cost_list[i] = data[i][2]
+            if cost:
+                cost_list[i] = data[i][2]
             distance_matrix[i][j] = dist
             distance_matrix[j][i] = dist
             distance_matrix[i][i] = np.inf
