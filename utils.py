@@ -28,8 +28,9 @@ def get_min_value(array):
     return np.min(array)
 
 def get_min_index(array):
-    min = get_min_value(array)
-    return min, np.where(array == min)[0][0]
+    min_index = np.argmin(array)
+    min  = array[min_index]
+    return min, min_index
 
 def Euclidian_distance(coor_1, coor_2):
     x1, y1 = coor_1
