@@ -19,8 +19,8 @@ def plotMap(nodes, edges=[], colors = False, cost = True):
         plt.scatter(X, Y, c = S, cmap="grey")
     else:
         plt.scatter(X, Y, cmap="grey") 
-        for i in range(len(nodes)):
-            plt.annotate(i, (X[i], Y[i]+0.2))
+    for i in range(len(nodes)):
+        plt.annotate(i, (X[i], Y[i]+0.2))
     plt.show()
 
 
@@ -35,7 +35,7 @@ def get_min_index(array):
 def Euclidian_distance(coor_1, coor_2):
     x1, y1 = coor_1
     x2, y2 = coor_2
-    return ((x2 -x1)**2 + (y2-y1)**2 )**(1/2)
+    return int((x2 -x1)**2 + (y2-y1)**2 )**(1/2)
 
 
 def Random(cost_list, distance_matrix, lista):
