@@ -108,14 +108,14 @@ def KNN(distance_matrix, cost_list, NR_NODES, HALF_NODES,starting_node):
     cost+=distance_matrix[visited_ind[0],visited_ind[1]]
     return cost, edges
 
-def add_to_cycle(edge, new_n, dist_m,edges):
+def add_to_cycle(edge, new_n, dist_m,edges, cost_list):
     #
     start_n = edge[0]
     end_n = edge[1]
     # cost(start-end) + cost(start, new) + cost(end,new) + cost(new)
 
-    cost_diff = - dist_m[[start_n, end_n]] + dist_m[[start_n, new_n]] + dist_m[[new_n, end_n]] + dist_m[[new_n, new_n]]
-    edges.remove([edge])
+    cost_diff = - dist_m[[start_n, end_n]] + dist_m[[start_n, new_n]] + dist_m[[new_n, end_n]] + cost_list[ new_n]
+    edges.remove(edge)
     edges.append([start_n, new_n])
     edges.append([new_n, end_n])
     return edges, cost_diff
