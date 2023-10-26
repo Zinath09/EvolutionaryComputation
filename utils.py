@@ -228,8 +228,6 @@ def two_regret_greedy_cycle(distance_matrix,cost_list,NR_NODES, HALF_NODES, star
         print(non_visited, cur_tour)
     total_cost = cost_list[cur_tour[0][1]] + cost_list[cur_tour[0][0]] + 2 * distance_matrix[cur_tour[0][1]][cur_tour[0][0]]
 
-    # plotMap(data, edges=cur_tour, colors = False, cost = False)
-    # cost_matrix = start_dist_matrix * cost_list.T
     for i in range(HALF_NODES):
         start_dist_matrix = create_regret_matrix(non_visited, cur_tour, distance_matrix, cost_list)
         start_dist_for_nodes = np.min(start_dist_matrix, axis = 1)
@@ -237,8 +235,9 @@ def two_regret_greedy_cycle(distance_matrix,cost_list,NR_NODES, HALF_NODES, star
         
         max_regrets = [-1 for i in range(NR_NODES)]
         for new_node in non_visited:
-            #zakładamy że bierzemy najlepszy edge dla danego node
-            edge = cur_tour[np.argmin(start_dist_matrix[new_node], axis=0)]
+            #we assume that we are adding new node in the shortest way
+            edge_index = np.argmin(start_dist_matrix[new_node], axis=0)
+            edge = cur_tour[edge_index]
 
             #if we add new_node in place of edge
             sim_non_visited = deepcopy(non_visited)
@@ -246,18 +245,34 @@ def two_regret_greedy_cycle(distance_matrix,cost_list,NR_NODES, HALF_NODES, star
             sim_cur_tour, cost_diff = add_to_cycle(edge, new_node, distance_matrix, sim_cur_tour, cost_list)
             sim_non_visited.remove(new_node)
             
-            sim_cur_tour = [(new_node, edge[0]), (edge[1], new_node)]
             
-            sim_regret_matrix = create_regret_matrix(sim_non_visited, sim_cur_tour , distance_matrix, cost_list) #[(new_node, edge[0]), (edge[1], new_node)]
+            sim_regret_matrix = create_regret_matrix(sim_non_visited, [(new_node, edge[0]), (edge[1], new_node)] , distance_matrix, cost_list) #[(new_node, edge[0]), (edge[1], new_node)]
             #create sth that copy the start dist-matrix but without edge and add sim_m_regret matrix to count the min 
             
-            first = np.min(start_dist_matrix[:], axis = 1)
-            distances_after_inserting = np.min(sim_regret_matrix, axis = 1) #min distance to every node after we insert node in particular place,
+            #min distance to every node after we insert node in particular place,
+            new_edges_dist = np.min(sim_regret_matrix, axis = 1)
+
+            if len(cur_tour)==2: #only two edges
+                 distances_after_inserting = new_edges_dist
+
+            if edge_index == 0: #first edge
+                reused_dist_2 = np.min(start_dist_matrix[:,edge_index+1:], axis = 1)
+                distances_after_inserting = np.minimum(reused_dist_2, new_edges_dist) 
+
+            elif edge_index == len(cur_tour)-1: #last edge
+                reused_dist_1 = np.min(start_dist_matrix[:,: edge_index], axis = 1)
+                distances_after_inserting = np.minimum(reused_dist_1, new_edges_dist) 
+
+            else:
+                reused_dist_1 = np.min(start_dist_matrix[:,: edge_index], axis = 1)
+                reused_dist_2 = np.min(start_dist_matrix[:,edge_index+1:], axis = 1)
+                distances_after_inserting = np.minimum(reused_dist_1,reused_dist_2, new_edges_dist) 
+
+
             regret = distances_after_inserting - start_dist_for_nodes
 
             # print(pd.DataFrame(zip(start_dist_for_nodes,distances_after_inserting, regret)))
-            max_regrets[new_node] = np.max(regret) #if we dont add this node some other node will be further by max_regret
-        # print(max_regrets)
+            max_regrets[new_node] = np.max(regret)
         added_node = np.argmax(max_regrets)
         edge = cur_tour[np.argmin(start_dist_matrix[added_node], axis=0)]
         
@@ -271,4 +286,3 @@ def two_regret_greedy_cycle(distance_matrix,cost_list,NR_NODES, HALF_NODES, star
             print("CUR_TOUR",cur_tour)
     print(starting_node, total_cost)
     return total_cost, cur_tour
-        # print("FINAL", i, total_cost)
