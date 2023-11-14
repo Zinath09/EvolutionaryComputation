@@ -1,4 +1,38 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import csv
+
+def get_data(path):
+    
+    with open(path, newline='') as csvfile:
+        data = list(csv.reader(csvfile, delimiter=';'))
+        for item in range(len(data)):
+            i = data[item]
+            data[item] = [int(x) for x in i]
+    return data
+
+def plotMap(nodes, edges=[], tour = [],colors = False, cost = True):
+    fig=plt.figure(figsize=(6,6), dpi= 100, facecolor='w', edgecolor='k')
+    if edges ==[] : #[ordered nodes not edges
+        for i in range(len(tour)):
+            edges.append([tour[i],tour[(i+1)%len(tour)]])
+    for e in (edges):
+        start, end = e
+        X = [nodes[start][0], nodes[end][0]]
+        
+        Y = [nodes[start][1], nodes[end][1]]
+        plt.plot(X, Y, lw=1, ls="-", marker="", color = 'gray' )
+        
+    X = [c[0] for c in nodes]
+    Y = [c[1] for c in nodes]
+    if cost:
+        S = [c[2] for c in nodes]
+        plt.scatter(X, Y, c = S, cmap="grey")
+    else:
+        plt.scatter(X, Y, cmap="grey") 
+    for i in range(len(nodes)):
+        plt.annotate(i, (X[i], Y[i]+0.2))
+    plt.show()
 
 def Euclidian_distance(coor_1, coor_2):
     x1, y1 = coor_1
