@@ -5,7 +5,7 @@ class Algorithm():
     
     def __init__(self, data) -> None:
         self.NR_NODES = len(data)
-
+        self.HALF_NODES = round(self.NR_NODES/2)
         self.unvisited = list(range(self.NR_NODES))
 
         self.is_cost = len(data[0]) == 3
@@ -20,6 +20,9 @@ class Algorithm():
         pass
 
     def count_diff(self):
+        pass
+
+    def next_node(self):
         pass
     
     def create_dist_matrix_and_cost(self,data):
@@ -36,8 +39,9 @@ class Algorithm():
         self.node_distances = node_distances
         if self.is_cost:
             self.cost_list = cost_list
-            
+
 
     
+
 
 

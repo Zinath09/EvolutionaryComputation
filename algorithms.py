@@ -158,3 +158,15 @@ def KNN(distance_matrix, cost_list, NR_NODES, HALF_NODES,starting_node):
 
 
 
+def Random(cost_list, distance_matrix, lista):
+    lenght = len(lista)
+    total_cost = 0
+    edges = []
+    for i in range(lenght):
+        a = lista[i]
+        b = lista[(i+1)%lenght]
+        dist = distance_matrix[a][b]
+        cost = cost_list[i]
+        total_cost += dist + cost 
+        edges.append([a,b])
+    return edges, total_cost

@@ -13,6 +13,7 @@ class CycleAlgorithm(Algorithm):
         self.total_cost = 0
         self.cur_tour = []
         self.edge_distances = []
+
     
     def starting_solution(self, starting_node=0, second_node=1):
         self.cur_tour = [[starting_node,second_node], [second_node,starting_node]]
@@ -56,15 +57,16 @@ class CycleAlgorithm(Algorithm):
         return matrix
     
 
-    
-    def update_edge_distances(self, added_edges, removed_edge_index = -1):
+    def update_edge_distances(self, added_edges, removed_edge_index = False):
         added_edges_matrix = self.count_edge_distances_to_unvisited_nodes(added_edges)
 
-        assert(len(self.cur_tour)==2, 'This function comes after updating cur_nodes')
-        if removed_edge_index == -1:
+        # assert(len(self.cur_tour)==2, 'This function comes after updating cur_nodes')
+        if len(self.edge_distances) == 0:
+            final_edge_distances = added_edges
+        elif removed_edge_index == False:
             final_edge_distances = np.concatenate([self.edge_distances, added_edges_matrix], axis = 1)
  
-        if removed_edge_index == 0: #first edge
+        elif removed_edge_index == 0: #first edge
             reused_dist_2 = self.edge_distances[:,removed_edge_index+1:]
             final_edge_distances = np.concatenate([reused_dist_2, added_edges_matrix], axis = 1)
 
@@ -91,3 +93,25 @@ class CycleAlgorithm(Algorithm):
         mask_array[np.array(self.unvisited)] = True
         a[~mask_array] = np.inf
         return np.argmin(a)
+    
+    def create_cur_tour_and_update(self, lista):
+        self.cur_tour = self.create_cur_tour_from_list(lista)
+        
+        for visited in np.unique(self.cur_tour):
+            self.unvisited.remove(visited)
+        self.update_edge_distances(self.cur_tour)
+
+    def create_cur_tour_from_list(self, lista):
+        lenght = len(lista)
+        total_cost = 0
+        edges = []
+        for i in range(lenght):
+            a = lista[i]
+            b = lista[(i+1)%lenght]
+            dist = self.node_distances[a][b]
+            cost = self.cost_list[i]
+            total_cost += dist + cost 
+            edges.append([a,b])
+            
+        return edges
+    

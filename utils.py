@@ -4,9 +4,11 @@ import random
 from copy import deepcopy
 import csv 
 
-def plotMap(nodes, edges=[], colors = False, cost = True):
+def plotMap(nodes, edges=[], tour = [],colors = False, cost = True):
     fig=plt.figure(figsize=(6,6), dpi= 100, facecolor='w', edgecolor='k')
-    
+    if edges ==[] : #[ordered nodes not edges
+        for i in range(len(tour)):
+            edges.append([tour[i],tour[(i+1)%len(tour)]])
     for e in (edges):
         start, end = e
         X = [nodes[start][0], nodes[end][0]]
@@ -40,18 +42,7 @@ def Euclidian_distance(coor_1, coor_2):
     return int(((x2 -x1)**2 + (y2-y1)**2 )**(1/2))
 
 
-def Random(cost_list, distance_matrix, lista):
-    lenght = len(lista)
-    total_cost = 0
-    edges = []
-    for i in range(lenght):
-        a = lista[i]
-        b = lista[(i+1)%lenght]
-        dist = distance_matrix[a][b]
-        cost = cost_list[i]
-        total_cost += dist + cost 
-        edges.append([a,b])
-    return edges, total_cost
+
 
 
 def get_dist_matrix_and_cost(data, cost = True):
@@ -145,5 +136,44 @@ def get_data(path):
         data = list(csv.reader(csvfile, delimiter=';'))
         for item in range(len(data)):
             i = data[item]
-            data[item] = [int(i[0]),int(i[1]),int(i[2])]
+            data[item] = [int(x) for x in i]
     return data
+
+def swap_visited_nodes(node_1, node_2, lista):
+    index_1 = lista.index(node_1)
+    index_2 = lista.index(node_2)
+    lista[index_1] = node_2
+    lista[index_2] = node_1
+    return lista
+
+
+def swap_2_visited(lista):
+    node_1, node_2 = random.sample(lista, 2)
+    lista = swap_visited_nodes(node_1, node_2, lista)
+    return lista
+
+def swap_unvisited_and_visited_nodes(visited, unvisited, lista):
+    index_1 = lista.index(visited)
+    lista[index_1] = unvisited
+    unvisited.remove(unvisited)
+    unvisited.append(visited)
+
+    return lista, unvisited
+
+def swap_unvisited_and_visited(lista, unvisited):
+    node_1 = random.choice(lista)
+    node_2 = random.choice(unvisited)
+    swap_unvisited_and_visited_nodes(node_1, node_2, lista, unvisited)
+    
+    return lista, unvisited
+    
+def find_first_better(lista, total_cost, unvisited):
+    random.shuffle(unvisited)
+    random_lista = list(range(len(lista)))
+    random.shuffle(random_lista)
+    random_ = [lista[x] for x in random_lista]
+    # print(random_)
+    for i in unvisited:
+        for j in random_:
+            lista, unvisited = swap_unvisited_and_visited_nodes(j, i, lista, unvisited)
+            check_total()
